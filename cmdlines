@@ -52,3 +52,13 @@ git branch -M main
 git push -u origin main
 git push --set-upstream origin master
 
+# En general pour la mise en production, quand il ya des maj periodiques il faut le faire avec des scripts qui le feront 
+# automatiquement
+# dans une crontab sur le server distant
+# exemple de certbot
+# On lance la commande 
+crontab -e
+# et on ajoute la ligne suivante dans le fichier
+# qui veut dire : à minuit tous les jours
+0 0 * * * certbot --standalone renew --pre-hook "/snap/bin/docker compose -f ~/docker-production/docker-compose.prod.yml stop reverseproxy" --post-hook "/snap/bin/docker compose -f ~/docker-production/docker-compose.prod.yml restart reverseproxy"
+
