@@ -49,4 +49,5 @@ git add
 git remote add origin https://github.com/Rodriguez001/Docker-production.git
 git branch -M main
 git push -u origin main
+git push --set-upstream origin master
 
