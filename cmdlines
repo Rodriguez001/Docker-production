@@ -1,0 +1,49 @@
+#Pour verifier l'ecoute sur un port
+netstat -tanlp | grep 80
+sudo lsof -i :80
+
+
+#Projet fullstack command lines
+#creation de tous les repertoires api, client, db, reverse-proxy
+# creation des fichiers docker-compose
+# lancer la commande de creation du client react 
+create-react-app
+# creation des fichiers dockerfile dev et prod dans les 4 repertoire
+# Ecriture du dockerfile dev de client et debut du docker-compose
+#lancer le docker-compose (remarque : il est prudent de rebuild l'image quand il ya une modif. structurelle)
+docker compose -f docker-compose.dev.yml up --build 
+# On modifie le fichier App.js pour repondre à la requete venant de 
+# la route /api/count
+#dans le dossier api, initialisation de npm et installation des packages necessaires
+npm init -y
+npm i express nodemon mongodb
+#On complete le fichier docker-compose
+#on run la partie api
+docker compose -f docker-compose.dev.yml run api
+# la partie db
+docker compose -f docker-compose.dev.yml run db
+#On se connecte sur la db
+docker container exec -it ID_container mongosh
+#On crée la BD et la donnée count
+use test
+db.count.insertOne({ count: 0 });
+# On relance tout pour tester la db
+docker compose -f docker-compose.dev.yml up
+# On va sur l'url: localhost:3001/api/count
+
+#En production
+# commandes de la bd
+use admin
+db.auth({ user: 'admin', pwd: 'secret'})
+db.createUser({ user : 'rodrigue', pwd: '123', roles: [ {role: 'readWrite', db: 'test'} ] })
+
+# Pour la mise en production, on va ajouter de la sécurité ssl-https (encryption): certbot
+# On va utiliser PM2 un load balancer, car on va lancer les processus node sur chaque coeur de la machine
+# PM2 est un gestionnaire de processus pour Node.js
+MONGO_USERNAME=rodrigue MONGO_PWD=123 docker compose -f docker-compose.prod.yml run api
+MONGO_USERNAME=rodrigue MONGO_PWD=123 docker compose -f docker-compose.prod.yml up --build
+
+# on met le projet sur git
+git init
+
+
